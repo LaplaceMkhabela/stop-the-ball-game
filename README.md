@@ -1,3 +1,5 @@
+# Stop The Ball Game
+
 Test your reflexes in this simple but addictive game! A blue ball moves across the screen, and your goal is to stop it inside the green target zone by pressing the STOP! button.
 
 Perfect Stop (inside the zone): +10 points 🎯
