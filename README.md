@@ -10,3 +10,5 @@ The ball speeds up after each successful stop,If you want to start over, just hi
 
 
 you can play the game here : https://stoptheball.netlify.app/
+
+![gameplay screenshot](Screenshot%20(528).png)
