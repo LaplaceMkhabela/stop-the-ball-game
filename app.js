@@ -33,13 +33,6 @@ const movingObject = document.getElementById('movingObject');
             if (position > 600) {
                 position = -40;
                 
-                // Only increase speed if player scored last round
-                if (shouldIncreaseSpeed && speed < MAX_SPEED) {
-                    speed += SPEED_INCREMENT;
-                    speedDisplay.textContent = "Speed: " + speed.toFixed(1);
-                    shouldIncreaseSpeed = false; // Reset flag
-                }
-                
                 // Visual feedback when reaching max speed
                 if (speed >= MAX_SPEED) {
                     movingObject.classList.add('max-speed');
@@ -66,6 +59,14 @@ const movingObject = document.getElementById('movingObject');
                 message.textContent = "Perfect! +10 points";
                 message.style.color = "#2ecc71";
                 scored = true;
+                shouldIncreaseSpeed = true;
+
+                    // Only increase speed if player scored last round
+                if (shouldIncreaseSpeed && speed < MAX_SPEED) {
+                    speed += SPEED_INCREMENT;
+                    speedDisplay.textContent = "Speed: " + speed.toFixed(1);
+                    shouldIncreaseSpeed = false; // Reset flag
+                }
             } 
             else if ((position >= targetLeft && position <= targetRight) || 
                      (objectRight >= targetLeft && objectRight <= targetRight)) {
@@ -73,6 +74,14 @@ const movingObject = document.getElementById('movingObject');
                 message.textContent = "Partial! +5 points";
                 message.style.color = "#f39c12";
                 scored = true;
+                shouldIncreaseSpeed = true;
+
+                    // Only increase speed if player scored last round
+                if (shouldIncreaseSpeed && speed < MAX_SPEED) {
+                    speed += SPEED_INCREMENT;
+                    speedDisplay.textContent = "Speed: " + speed.toFixed(1);
+                    shouldIncreaseSpeed = false; // Reset flag
+                }
             }
             else {
                 message.textContent = "Missed! Try again";
