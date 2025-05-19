@@ -1,1 +1,81 @@
 
+body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #gameContainer {
+            width: 600px;
+            height: 300px;
+            margin: 0 auto;
+            position: relative;
+            border: 2px solid #333;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+        #movingObject {
+            width: 40px;
+            height: 40px;
+            background-color: #3498db;
+            border-radius: 50%;
+            position: absolute;
+            top: 130px;
+            left: 0;
+            transition: background-color 0.3s;
+        }
+        #targetZone {
+            width: 80px;
+            height: 100px;
+            background-color: rgba(46, 204, 113, 0.5);
+            position: absolute;
+            top: 100px;
+            right: 100px;
+            border: 2px dashed #2ecc71;
+        }
+        #scoreDisplay {
+            font-size: 24px;
+            margin: 20px;
+        }
+        #speedDisplay {
+            font-size: 18px;
+            margin: 10px;
+            color: #7f8c8d;
+        }
+        #controls {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        #stopButton {
+            background-color: #e74c3c;
+        }
+        #stopButton:hover {
+            background-color: #c0392b;
+        }
+        #resetButton {
+            background-color: #3498db;
+        }
+        #resetButton:hover {
+            background-color: #2980b9;
+        }
+        #message {
+            height: 20px;
+            color: #e74c3c;
+            margin: 10px;
+            font-weight: bold;
+        }
+        .max-speed {
+            background-color: #e74c3c !important;
+            animation: pulse 0.5s infinite alternate;
+        }
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
