@@ -184,7 +184,7 @@ const dust=Array.from({length:RM?28:70},()=>({x:Math.random(),y:Math.random(),s:
 /* ---------- DOM ---------- */
 const canvas=$('#cv'),ctx=canvas.getContext('2d'),stage=$('#stage');
 const ov=$('#ov'),card=$('#card'),stopBtn=$('#stopBtn'),comboEl=$('#combo'),live=$('#live');
-const whoAvatarEl=$('#whoAvatar'),whoNameEl=$('#whoName'),pauseBtn=$('#btnPause');
+const whoAvatarEl=$('#whoAvatar'),whoNameEl=$('#whoName'),pauseBtn=$('#btnPause'),hudActions=$('#hudActions'),fab=$('#fab');
 const HEART='<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2 0 3.4 1.1 5.3 3 1.9-1.9 3.3-3 5.3-3 3.7 0 5.800 3.900 4.300 7.300C19.500 16.400 12 21 12 21z"/></svg>';
 const say=t=>{live.textContent=t;};
 function buildPips(){$('#pips').innerHTML=Array.from({length:G.L.rounds||0},(_,i)=>`<i class="${i<G.round?'done':''}"></i>`).join('');}
@@ -196,9 +196,16 @@ function updateHUD(){
   else{$('#lvlN').textContent='Level '+G.level;$('#lvlName').textContent=G.L.name;}
   buildPips();buildLives();syncPause();
 }
-let viewToken=0;
-function showCard(html){viewToken++;card.innerHTML=html;ov.classList.add('show');const b=card.querySelector('.btn.primary');if(b)setTimeout(()=>b.focus({preventScroll:true}),30);}
-function hideCard(){ov.classList.remove('show');}
+let viewToken=0,fabOpen=false;
+function setFab(open){
+  if(fabOpen===open)return;
+  fabOpen=open;
+  fab.setAttribute('aria-expanded',open?'true':'false');
+  fab.setAttribute('aria-label',open?'Hide controls':'Show controls');
+  hudActions.classList.toggle('open',open);
+}
+function showCard(html){viewToken++;setFab(false);card.innerHTML=html;ov.classList.add('show');document.body.classList.add('overlay-open');const b=card.querySelector('.btn.primary');if(b)setTimeout(()=>b.focus({preventScroll:true}),30);}
+function hideCard(){ov.classList.remove('show');document.body.classList.remove('overlay-open');}
 function syncPause(){
   const p=G.state==='paused',can=p||G.state==='play'||G.state==='intro';
   pauseBtn.disabled=!can;
@@ -473,8 +480,15 @@ card.addEventListener('click',e=>{
 });
 card.addEventListener('input',e=>{if(e.target&&e.target.id==='playerName')updateOnboard();});
 card.addEventListener('keydown',e=>{if(e.target&&e.target.id==='playerName'&&e.key==='Enter'){const btn=card.querySelector('[data-act="save-player"]');if(btn&&!btn.disabled)btn.click();}});
-stage.addEventListener('pointerdown',e=>{if(e.target.closest('.overlay.show'))return;e.preventDefault();stop();});
+stage.addEventListener('pointerdown',e=>{if(fabOpen)return;if(e.target.closest('.overlay.show'))return;e.preventDefault();stop();});
 stopBtn.addEventListener('pointerdown',e=>{e.preventDefault();stop();});
+fab.addEventListener('click',e=>{e.stopPropagation();ac();setFab(!fabOpen);});
+hudActions.addEventListener('click',()=>setFab(false));
+document.addEventListener('pointerdown',e=>{
+  if(!fabOpen)return;
+  if(e.target.closest('#fab')||e.target.closest('#hudActions'))return;
+  setFab(false);
+});
 document.addEventListener('keydown',e=>{
   if((e.code==='Space'||e.code==='Enter')&&G.state==='play'){e.preventDefault();stop();}
   else if((e.code==='KeyP'||e.key==='Escape')&&(G.state==='play'||G.state==='intro'||G.state==='paused')){e.preventDefault();togglePause();}
