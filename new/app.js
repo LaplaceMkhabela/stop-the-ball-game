@@ -404,6 +404,7 @@ document.addEventListener('keydown',e=>{
 });
 $('#btnMenu').addEventListener('click',()=>{ac();showMenu();});
 $('#btnRestart').addEventListener('click',()=>{ac();if(G.state!=='menu')startLevel(G.level,G.levelStartScore);});
+$('#who').addEventListener('click',()=>{ac();showOnboarding();});
 const sndBtn=$('#btnSound');
 const syncSound=()=>{sndBtn.classList.toggle('off',!store.data.sound);};
 sndBtn.addEventListener('click',()=>{store.data.sound=!store.data.sound;store.save();syncSound();if(store.data.sound){ac();sfx.tick();}});
