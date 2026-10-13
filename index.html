@@ -4,8 +4,7 @@
     <title>Stop the Ball Game</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#0c1020">
-    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#a1c4fd">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,18 +15,35 @@
         <button id="adPlayButton" class="hidden">Play</button>
         <div id="adHint" class="hidden">Tap anywhere to continue</div>
     </div>
-    <div id="menu" class="hidden">
+
+    <div id="menu" class="container hidden">
+        <div class="floating-char char-circle">
+            <div class="face">
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+                <div class="mouth"></div>
+            </div>
+        </div>
+        <div class="floating-char char-star">
+            <div class="face">
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+                <div class="mouth"></div>
+            </div>
+        </div>
+
         <h1>Stop the Ball Game</h1>
         <p>Choose a version to play</p>
-        <div id="modeList">
-            <button class="mode-button" data-href="classic/">
-                <span class="mode-name">Classic</span>
-                <span class="mode-desc">The original reflex game</span>
-            </button>
-            <button class="mode-button" data-href="new/">
-                <span class="mode-name">New Version</span>
-                <span class="mode-desc">10 levels, shapes &amp; decoys</span>
-            </button>
+
+        <div class="cards-wrapper">
+            <a class="mode-card" href="classic/">
+                <div class="mode-title">Classic</div>
+                <div class="mode-desc">The original reflex game</div>
+            </a>
+            <a class="mode-card" href="new/">
+                <div class="mode-title">New Version</div>
+                <div class="mode-desc">10 levels, shapes &amp; decoys</div>
+            </a>
         </div>
     </div>
     <script src="app.js"></script>

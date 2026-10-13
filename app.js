@@ -91,9 +91,3 @@ ad.addEventListener('click', () => {
     ad.classList.add('hidden');
     menu.classList.remove('hidden');
 });
-
-document.querySelectorAll('.mode-button').forEach((button) => {
-    button.addEventListener('click', () => {
-        window.location.href = button.dataset.href;
-    });
-});
