@@ -172,7 +172,7 @@ const hueFor=n=>n<=10?HUES[n-1]:(285+(n-10)*47)%360;
 const G={
   state:'menu',level:1,L:MENU_L,score:0,levelStartScore:0,displayScore:0,lives:3,round:0,combo:0,misses:0,perfects:0,
   f:Math.random(),t:0,speedMult:1,ballShape:'circle',rot:0,target:null,decoys:[],snap:null,res:null,timer:0,lastShape:null,
-  hueCur:190,hueTarget:190,shake:0,flash:0,bonus:0
+  hueCur:190,hueTarget:190,shake:0,flash:0,bonus:0,pausedFrom:null
 };
 const trail=[],particles=[],rings=[],popups=[];
 const dust=Array.from({length:RM?28:70},()=>({x:Math.random(),y:Math.random(),s:Math.random()*1.8+.4,v:Math.random()*.6+.25,p:Math.random()*TAU}));
@@ -180,7 +180,7 @@ const dust=Array.from({length:RM?28:70},()=>({x:Math.random(),y:Math.random(),s:
 /* ---------- DOM ---------- */
 const canvas=$('#cv'),ctx=canvas.getContext('2d'),stage=$('#stage');
 const ov=$('#ov'),card=$('#card'),stopBtn=$('#stopBtn'),comboEl=$('#combo'),live=$('#live');
-const whoAvatarEl=$('#whoAvatar'),whoNameEl=$('#whoName');
+const whoAvatarEl=$('#whoAvatar'),whoNameEl=$('#whoName'),pauseBtn=$('#btnPause');
 const HEART='<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2 0 3.4 1.1 5.3 3 1.9-1.9 3.3-3 5.3-3 3.7 0 5.800 3.900 4.300 7.300C19.500 16.400 12 21 12 21z"/></svg>';
 const say=t=>{live.textContent=t;};
 function buildPips(){$('#pips').innerHTML=Array.from({length:G.L.rounds||0},(_,i)=>`<i class="${i<G.round?'done':''}"></i>`).join('');}
@@ -190,10 +190,28 @@ function updateHUD(){
   whoNameEl.textContent=store.data.name||'Player';
   if(G.state==='menu'){$('#lvlN').textContent='Pick a level';$('#lvlName').textContent='';}
   else{$('#lvlN').textContent='Level '+G.level;$('#lvlName').textContent=G.L.name;}
-  buildPips();buildLives();
+  buildPips();buildLives();syncPause();
 }
 function showCard(html){card.innerHTML=html;ov.classList.add('show');const b=card.querySelector('.btn.primary');if(b)setTimeout(()=>b.focus({preventScroll:true}),30);}
 function hideCard(){ov.classList.remove('show');}
+function syncPause(){
+  const p=G.state==='paused',can=p||G.state==='play'||G.state==='intro';
+  pauseBtn.disabled=!can;
+  pauseBtn.classList.toggle('paused',p);
+  pauseBtn.setAttribute('aria-label',p?'Resume':'Pause');
+}
+function togglePause(){
+  if(G.state==='paused'){
+    G.state=G.pausedFrom||'play';G.pausedFrom=null;
+    hideCard();syncPause();say('Resumed');
+  }else if(G.state==='play'||G.state==='intro'){
+    G.pausedFrom=G.state;G.state='paused';
+    showCard(`<h2>Paused</h2>
+      <p class="lede">Level ${G.level} &middot; Score ${G.score.toLocaleString()}</p>
+      <div class="actions"><button class="btn primary" data-act="resume">Resume</button><button class="btn" data-act="replay">Restart level</button><button class="btn" data-act="menu">Quit to menu</button></div>`);
+    syncPause();say('Paused');
+  }
+}
 
 /* ---------- geometry ---------- */
 function resize(){
@@ -393,6 +411,7 @@ card.addEventListener('click',e=>{
     store.data.name=val.slice(0,16);store.data.avatar=onboardAvatar;store.save();
     showMenu();
   }
+  else if(a==='resume')togglePause();
   else if(a==='change-player')showOnboarding();
 });
 card.addEventListener('input',e=>{if(e.target&&e.target.id==='playerName')updateOnboard();});
@@ -401,7 +420,9 @@ stage.addEventListener('pointerdown',e=>{if(e.target.closest('.overlay.show'))re
 stopBtn.addEventListener('pointerdown',e=>{e.preventDefault();stop();});
 document.addEventListener('keydown',e=>{
   if((e.code==='Space'||e.code==='Enter')&&G.state==='play'){e.preventDefault();stop();}
+  else if((e.code==='KeyP'||e.key==='Escape')&&(G.state==='play'||G.state==='intro'||G.state==='paused')){e.preventDefault();togglePause();}
 });
+$('#btnPause').addEventListener('click',()=>{ac();togglePause();});
 $('#btnMenu').addEventListener('click',()=>{ac();showMenu();});
 $('#btnRestart').addEventListener('click',()=>{ac();if(G.state!=='menu')startLevel(G.level,G.levelStartScore);});
 $('#who').addEventListener('click',()=>{ac();showOnboarding();});
@@ -411,8 +432,10 @@ sndBtn.addEventListener('click',()=>{store.data.sound=!store.data.sound;store.sa
 syncSound();
 
 /* ---------- update ---------- */
-let lastHue=-1,lastScore=-1,lastSpeed='',lastIdle=null,lastCombo=-1;
+let lastHue=-1,lastScore=-1,lastSpeed='',lastIdle=null,lastCombo=-1,lastState=null;
 function update(dt){
+  if(G.state!==lastState){lastState=G.state;syncPause();}
+  if(G.state==='paused')return;
   G.t+=dt;
   const dh=((G.hueTarget-G.hueCur+540)%360)-180;
   G.hueCur=(G.hueCur+dh*Math.min(1,dt*3)+360)%360;
@@ -443,7 +466,7 @@ function update(dt){
   }
   for(let i=trail.length-1;i>=0;i--){trail[i].age+=dt;if(trail[i].age>.32)trail.splice(i,1);}
 
-  if(G.state==='intro'){G.timer+=dt;if(G.timer>1.5){G.state='play';G.timer=0;}}
+  if(G.state==='intro'){G.timer+=dt;if(G.timer>1.5){G.state='play';G.timer=0;syncPause();}}
   else if(G.state==='play'&&G.target){
     if(G.L.decoys===0){
       const b=sample(G.f),tp=sample(G.target.f),d=Math.hypot(b[0]-tp[0],b[1]-tp[1]),tol=G.L.tol*R*1.25;

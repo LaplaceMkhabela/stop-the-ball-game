@@ -50,6 +50,11 @@ button{font:inherit;color:inherit}
 .icon:hover{background:hsl(var(--h) 50% 22% / .8)}
 .icon.off .slash{display:block}
 .icon .slash{display:none}
+.icon:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+#btnPause .ic-pause,#btnPause .ic-play{fill:var(--ink);stroke:none}
+#btnPause .ic-play{display:none}
+#btnPause.paused .ic-pause{display:none}
+#btnPause.paused .ic-play{display:block}
 .who{display:flex;align-items:center;gap:8px;align-self:center;max-width:190px;padding:5px 14px 5px 5px;border-radius:999px;border:1px solid var(--line);background:hsl(var(--h) 45% 14% / .6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;transition:background .2s,transform .12s}
 .who:hover{background:hsl(var(--h) 50% 22% / .8)}
 .who:active{transform:translateY(1px)}
