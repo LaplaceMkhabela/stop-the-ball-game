@@ -18,20 +18,26 @@ const movingObject = document.getElementById('movingObject');
         let animationId;
         let shouldIncreaseSpeed = false;
         
-        // Get target zone position
-        const targetRect = targetZone.getBoundingClientRect();
-        const containerRect = document.getElementById('gameContainer').getBoundingClientRect();
+        const container = document.getElementById('gameContainer');
         
-        const targetLeft = targetRect.left - containerRect.left;
-        const targetRight = targetRect.right - containerRect.left;
+        // Get target zone bounds relative to the game container
+        function targetBounds() {
+            const targetRect = targetZone.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            const originX = containerRect.left + container.clientLeft;
+            return {
+                left: targetRect.left - originX,
+                right: targetRect.right - originX
+            };
+        }
         
         function moveObject() {
             position += speed;
             movingObject.style.left = position + 'px';
             
             // Reset position if object goes off screen
-            if (position > 600) {
-                position = -40;
+            if (position > container.clientWidth) {
+                position = -movingObject.offsetWidth;
                 
                 // Visual feedback when reaching max speed
                 if (speed >= MAX_SPEED) {
@@ -51,10 +57,11 @@ const movingObject = document.getElementById('movingObject');
             cancelAnimationFrame(animationId);
             
             // Check if object is in target zone
-            const objectRight = position + 40;
+            const bounds = targetBounds();
+            const objectRight = position + movingObject.offsetWidth;
             let scored = false;
             
-            if (position >= targetLeft && objectRight <= targetRight) {
+            if (position >= bounds.left && objectRight <= bounds.right) {
                 score += 10;
                 message.textContent = "Perfect! +10 points";
                 message.style.color = "#2ecc71";
@@ -68,8 +75,8 @@ const movingObject = document.getElementById('movingObject');
                     shouldIncreaseSpeed = false; // Reset flag
                 }
             } 
-            else if ((position >= targetLeft && position <= targetRight) || 
-                     (objectRight >= targetLeft && objectRight <= targetRight)) {
+            else if ((position >= bounds.left && position <= bounds.right) || 
+                     (objectRight >= bounds.left && objectRight <= bounds.right)) {
                 score += 5;
                 message.textContent = "Partial! +5 points";
                 message.style.color = "#f39c12";
@@ -136,5 +143,11 @@ const movingObject = document.getElementById('movingObject');
         
         stopButton.addEventListener('click', stopObject);
         resetButton.addEventListener('click', fullReset);
+        
+        // Keep the ball inside the board when its size changes (rotation, resize)
+        window.addEventListener('resize', () => {
+            if (position > container.clientWidth) position = -movingObject.offsetWidth;
+            movingObject.style.left = position + 'px';
+        });
         
         moveObject();
