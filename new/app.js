@@ -8,10 +8,11 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const easeOutBack=t=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);};
+const escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- storage ---------- */
 const store={
-  data:{best:0,stars:{},unlocked:1,sound:true},
+  data:{best:0,stars:{},unlocked:1,sound:true,name:'',avatar:''},
   load(){try{const r=localStorage.getItem('stopTheBall.v2');if(r)Object.assign(this.data,JSON.parse(r));}catch(e){}},
   save(){try{localStorage.setItem('stopTheBall.v2',JSON.stringify(this.data));}catch(e){}}
 };
@@ -47,6 +48,7 @@ const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}};
 
 /* ---------- shapes ---------- */
 const SHAPES=['circle','square','triangle','diamond','hexagon','star','cross','heart','sparkle','pentagon','octagon'];
+const AVATARS=['🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝'];
 const SHAPE_NAME={circle:'Circle',square:'Square',triangle:'Triangle',diamond:'Diamond',hexagon:'Hexagon',star:'Star',cross:'Cross',heart:'Heart',sparkle:'Sparkle',pentagon:'Pentagon',octagon:'Octagon'};
 const PERIOD={circle:0,square:TAU/4,triangle:TAU/3,diamond:TAU/2,hexagon:TAU/6,star:TAU/5,cross:TAU/4,heart:0,sparkle:TAU/4,pentagon:TAU/5,octagon:TAU/8};
 
@@ -238,6 +240,26 @@ function startLevel(n,base){
   hideCard();updateHUD();sfx.tick();
   say(`Level ${n}. ${L.tip}`);
 }
+let onboardAvatar='';
+function showOnboarding(){
+  G.state='menu';G.L=MENU_L;G.target=null;G.decoys=[];G.hueTarget=190;G.speedMult=1;G.lives=3;G.round=0;G.score=0;G.displayScore=0;G.combo=0;
+  path.key='weave';buildPath();
+  trail.length=0;particles.length=0;rings.length=0;popups.length=0;
+  const d=store.data;
+  onboardAvatar=d.avatar||'';
+  const grid=AVATARS.map(a=>`<button class="avatar ${a===onboardAvatar?'on':''}" data-act="avatar" data-avatar="${a}" aria-label="Avatar ${a}" aria-pressed="${a===onboardAvatar}">${a}</button>`).join('');
+  showCard(`<h1>Welcome</h1>
+    <p class="lede">Pick a name and a fruit avatar to get started.</p>
+    <label class="field"><span>Player name</span><input id="playerName" class="name-input" type="text" maxlength="16" autocomplete="nickname" placeholder="Your name" value="${escapeHtml(d.name)}"></label>
+    <div class="avatars">${grid}</div>
+    <div class="actions"><button class="btn primary" data-act="save-player" disabled>Start playing</button></div>`);
+  updateOnboard();
+}
+function updateOnboard(){
+  const input=card.querySelector('#playerName'),btn=card.querySelector('[data-act="save-player"]');
+  if(!input||!btn)return;
+  btn.disabled=!(input.value.trim()&&onboardAvatar);
+}
 function showMenu(){
   G.state='menu';G.L=MENU_L;G.target=null;G.decoys=[];G.hueTarget=190;G.speedMult=1;G.lives=3;G.round=0;G.score=0;G.displayScore=0;G.combo=0;
   path.key='weave';buildPath();
@@ -248,7 +270,9 @@ function showMenu(){
     const locked=i>d.unlocked,st=d.stars[i]||0;
     grid+=`<button class="lv" data-act="level" data-n="${i}" ${locked?'disabled':''} aria-label="Level ${i}${locked?' locked':''}"><span class="num">${i}</span><canvas width="88" height="88" data-lv="${i}"></canvas><span class="st">${st?'★'.repeat(st):''}</span></button>`;
   }
+  const who=d.name?`<p class="player"><span class="player-av">${d.avatar||'🍏'}</span><span>${escapeHtml(d.name)}</span><button class="link" data-act="change-player">Change</button></p>`:'';
   showCard(`<h1>Stop the Ball</h1>
+    ${who}
     <p class="lede">Freeze the ball on the outline that matches its shape. Ten levels, three lives each.</p>
     <button class="btn primary" data-act="play">${d.unlocked>1?'Continue at level '+next:'Start playing'}</button>
     <div class="levels">${grid}</div>
@@ -354,7 +378,21 @@ card.addEventListener('click',e=>{
   else if(a==='replay')startLevel(G.level,G.levelStartScore);
   else if(a==='endless')startLevel(11,G.score);
   else if(a==='menu')showMenu();
+  else if(a==='avatar'){
+    onboardAvatar=b.dataset.avatar;
+    card.querySelectorAll('.avatar').forEach(el=>{const on=el.dataset.avatar===onboardAvatar;el.classList.toggle('on',on);el.setAttribute('aria-pressed',on);});
+    updateOnboard();
+  }
+  else if(a==='save-player'){
+    const input=card.querySelector('#playerName'),val=(input?input.value:'').trim();
+    if(!val||!onboardAvatar)return;
+    store.data.name=val.slice(0,16);store.data.avatar=onboardAvatar;store.save();
+    showMenu();
+  }
+  else if(a==='change-player')showOnboarding();
 });
+card.addEventListener('input',e=>{if(e.target&&e.target.id==='playerName')updateOnboard();});
+card.addEventListener('keydown',e=>{if(e.target&&e.target.id==='playerName'&&e.key==='Enter'){const btn=card.querySelector('[data-act="save-player"]');if(btn&&!btn.disabled)btn.click();}});
 stage.addEventListener('pointerdown',e=>{if(e.target.closest('.overlay.show'))return;e.preventDefault();stop();});
 stopBtn.addEventListener('pointerdown',e=>{e.preventDefault();stop();});
 document.addEventListener('keydown',e=>{
@@ -527,6 +565,6 @@ function frame(now){
 resize();
 if(window.ResizeObserver)new ResizeObserver(()=>resize()).observe(stage);
 window.addEventListener('resize',resize);
-showMenu();
+if(store.data.name&&store.data.avatar)showMenu();else showOnboarding();
 requestAnimationFrame(frame);
 })();
