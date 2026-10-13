@@ -10,9 +10,9 @@
 </head>
 <body>
     <div id="ad">
-        <video id="adBg" src="ad.mp4" playsinline muted preload="auto" aria-hidden="true"></video>
+        <canvas id="adCanvas" aria-hidden="true"></canvas>
         <div id="adGlass"></div>
-        <video id="adVideo" src="ad.mp4" playsinline muted preload="auto"></video>
+        <video id="adVideo" src="ad.mp4" playsinline muted preload="auto" disablepictureinpicture disableremoteplayback></video>
         <button id="adPlayButton" class="hidden">Play</button>
         <div id="adHint" class="hidden">Tap anywhere to continue</div>
     </div>
