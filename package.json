@@ -1,0 +1,9 @@
+{
+  "name": "stop-the-ball-game",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reflex ball-stopping game with classic and new canvas versions.",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.4"
+  }
+}

@@ -166,3 +166,13 @@ canvas#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
 .btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
 .btn:disabled:hover{filter:none}
 
+/* Leaderboard */
+.lb{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto;text-align:left}
+.lb-row{display:grid;grid-template-columns:auto auto 1fr auto auto;align-items:center;gap:10px;padding:8px 12px;border-radius:14px;background:hsl(var(--h) 40% 8% / .45)}
+.lb-row.me{background:hsl(var(--h) 60% 30% / .55);box-shadow:inset 0 0 0 1px hsl(var(--h) 100% 68% / .45)}
+.lb-rank{font-family:Unbounded,system-ui,sans-serif;font-weight:700;font-size:13px;color:var(--muted);min-width:1.8em;text-align:right;font-variant-numeric:tabular-nums}
+.lb-av{font-size:20px}
+.lb-name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-lvl{font-size:12px;color:var(--muted);white-space:nowrap}
+.lb-score{font-family:Unbounded,system-ui,sans-serif;font-weight:700;font-variant-numeric:tabular-nums}
+

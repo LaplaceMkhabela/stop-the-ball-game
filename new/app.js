@@ -12,11 +12,15 @@ const escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>'
 
 /* ---------- storage ---------- */
 const store={
-  data:{best:0,stars:{},unlocked:1,sound:true,name:'',avatar:''},
+  data:{best:0,stars:{},unlocked:1,sound:true,name:'',avatar:'',pid:''},
   load(){try{const r=localStorage.getItem('stopTheBall.v2');if(r)Object.assign(this.data,JSON.parse(r));}catch(e){}},
   save(){try{localStorage.setItem('stopTheBall.v2',JSON.stringify(this.data));}catch(e){}}
 };
 store.load();
+if(!store.data.pid){
+  store.data.pid=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+  store.save();
+}
 
 /* ---------- audio ---------- */
 let AC=null;
@@ -192,7 +196,8 @@ function updateHUD(){
   else{$('#lvlN').textContent='Level '+G.level;$('#lvlName').textContent=G.L.name;}
   buildPips();buildLives();syncPause();
 }
-function showCard(html){card.innerHTML=html;ov.classList.add('show');const b=card.querySelector('.btn.primary');if(b)setTimeout(()=>b.focus({preventScroll:true}),30);}
+let viewToken=0;
+function showCard(html){viewToken++;card.innerHTML=html;ov.classList.add('show');const b=card.querySelector('.btn.primary');if(b)setTimeout(()=>b.focus({preventScroll:true}),30);}
 function hideCard(){ov.classList.remove('show');}
 function syncPause(){
   const p=G.state==='paused',can=p||G.state==='play'||G.state==='intro';
@@ -211,6 +216,54 @@ function togglePause(){
       <div class="actions"><button class="btn primary" data-act="resume">Resume</button><button class="btn" data-act="replay">Restart level</button><button class="btn" data-act="menu">Quit to menu</button></div>`);
     syncPause();say('Paused');
   }
+}
+
+/* ---------- leaderboard ---------- */
+const LOCAL_LB_KEY='stopTheBall.leaderboard';
+const rank=(a,b)=>b.score-a.score||a.ts-b.ts;
+function localEntries(){
+  try{const raw=localStorage.getItem(LOCAL_LB_KEY);const list=raw?JSON.parse(raw):[];return Array.isArray(list)?list:[];}
+  catch(e){return [];}
+}
+function cacheLocal(entry){
+  const list=localEntries(),i=list.findIndex(e=>e.pid===entry.pid);
+  if(i>=0){if(entry.score>list[i].score)list[i]=entry;}else list.push(entry);
+  list.sort(rank);
+  try{localStorage.setItem(LOCAL_LB_KEY,JSON.stringify(list.slice(0,50)));}catch(e){}
+}
+async function submitScore(){
+  if(!store.data.name||!store.data.avatar||G.score<=0)return;
+  const entry={pid:store.data.pid,name:store.data.name,avatar:store.data.avatar,score:Math.round(G.score),level:G.level,ts:Date.now()};
+  cacheLocal(entry);
+  try{await fetch('/api/scores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});}catch(e){}
+}
+async function loadLeaderboard(){
+  try{
+    const res=await fetch('/api/scores',{headers:{'Accept':'application/json'}});
+    if(!res.ok)throw new Error('status '+res.status);
+    const data=await res.json();
+    if(!data||!Array.isArray(data.entries))throw new Error('bad payload');
+    return {entries:data.entries,online:true};
+  }catch(e){
+    return {entries:localEntries().sort(rank).slice(0,20),online:false};
+  }
+}
+async function showLeaderboard(){
+  G.state='menu';
+  showCard(`<h2>Leaderboard</h2><p class="lede">Loading scores&hellip;</p>`);
+  const token=viewToken;
+  const {entries,online}=await loadLeaderboard();
+  if(token!==viewToken)return;
+  const list=entries.slice(0,20);
+  const rows=list.map((e,i)=>{
+    const me=e.pid===store.data.pid?' me':'';
+    return `<li class="lb-row${me}"><span class="lb-rank">${i+1}</span><span class="lb-av">${escapeHtml(e.avatar||'🍏')}</span><span class="lb-name">${escapeHtml(e.name||'Player')}</span><span class="lb-lvl">Lv ${e.level||1}</span><span class="lb-score">${(Number(e.score)||0).toLocaleString()}</span></li>`;
+  }).join('');
+  const lede=online?'Global top players':(list.length?'Offline &mdash; scores saved on this device':'No scores yet. Be the first!');
+  showCard(`<h2>Leaderboard</h2>
+    <p class="lede">${lede}</p>
+    ${list.length?`<ol class="lb">${rows}</ol>`:''}
+    <div class="actions"><button class="btn primary" data-act="menu">Back to menu</button></div>`);
 }
 
 /* ---------- geometry ---------- */
@@ -298,7 +351,8 @@ function showMenu(){
     <p class="lede">Freeze the ball on the outline that matches its shape. Ten levels, three lives each.</p>
     <button class="btn primary" data-act="play">${d.unlocked>1?'Continue at level '+next:'Start playing'}</button>
     <div class="levels">${grid}</div>
-    <p class="best">Best score: ${d.best.toLocaleString()}</p>`);
+    <p class="best">Best score: ${d.best.toLocaleString()}</p>
+    <div class="actions"><button class="btn" data-act="leaderboard">Leaderboard</button></div>`);
   card.querySelectorAll('canvas[data-lv]').forEach(cv=>{
     const n=+cv.dataset.lv,L=LEVELS[n-1],c=cv.getContext('2d');
     c.translate(44,44);
@@ -368,6 +422,7 @@ function completeLevel(){
   d.stars[n]=Math.max(d.stars[n]||0,stars);
   if(n<=10)d.unlocked=Math.max(d.unlocked,Math.min(10,n+1));
   d.best=Math.max(d.best,G.score);store.save();
+  submitScore();
   for(let i=0;i<5;i++)burst(rand(W*.15,W*.85),rand(H*.2,H*.7),pick(SHAPES),Math.round(G.hueCur),22,.8);
   sfx.win();buzz([30,40,30,40,60]);say(`Level ${n} clear`);
   const starsHtml=`<div class="stars" aria-label="${stars} of 3 stars">${[1,2,3].map(i=>`<span class="star ${i<=stars?'on':''}" style="--i:${i}">★</span>`).join('')}</div>`;
@@ -383,10 +438,11 @@ function completeLevel(){
 function gameOver(){
   G.state='over';
   const d=store.data;d.best=Math.max(d.best,G.score);store.save();
+  submitScore();
   sfx.lose();say('Out of lives');
   showCard(`<h2>Out of lives</h2>
     <p class="lede">You reached round ${G.round+1} of ${G.L.rounds} on level ${G.level}. Score ${G.score.toLocaleString()}.</p>
-    <div class="actions"><button class="btn primary" data-act="replay">Retry level</button><button class="btn" data-act="menu">Menu</button></div>`);
+    <div class="actions"><button class="btn primary" data-act="replay">Retry level</button><button class="btn" data-act="leaderboard">Leaderboard</button><button class="btn" data-act="menu">Menu</button></div>`);
 }
 
 /* ---------- input ---------- */
@@ -412,6 +468,7 @@ card.addEventListener('click',e=>{
     showMenu();
   }
   else if(a==='resume')togglePause();
+  else if(a==='leaderboard')showLeaderboard();
   else if(a==='change-player')showOnboarding();
 });
 card.addEventListener('input',e=>{if(e.target&&e.target.id==='playerName')updateOnboard();});
