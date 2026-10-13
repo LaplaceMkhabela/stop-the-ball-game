@@ -187,14 +187,14 @@ const ov=$('#ov'),card=$('#card'),stopBtn=$('#stopBtn'),comboEl=$('#combo'),live
 const whoAvatarEl=$('#whoAvatar'),whoNameEl=$('#whoName'),pauseBtn=$('#btnPause'),hudActions=$('#hudActions'),fab=$('#fab'),speedBar=$('#speedBar');
 const HEART='<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2 0 3.4 1.1 5.3 3 1.9-1.9 3.3-3 5.3-3 3.7 0 5.800 3.900 4.300 7.300C19.500 16.400 12 21 12 21z"/></svg>';
 const say=t=>{live.textContent=t;};
-function buildPips(){$('#pips').innerHTML=Array.from({length:G.L.rounds||0},(_,i)=>`<i class="${i<G.round?'done':''}"></i>`).join('');}
+function buildRoundBar(){const el=$('#roundbar'),fill=$('#roundFill'),total=G.L.rounds||0;if(!el)return;if(!total){el.hidden=true;fill.style.width='0%';return;}el.hidden=false;fill.style.width=(Math.min(1,G.round/total)*100).toFixed(0)+'%';}
 function buildLives(){$('#lives').innerHTML=Array.from({length:3},(_,i)=>HEART.replace('<svg','<svg class="'+(i<G.lives?'':'lost')+'"')).join('');}
 function updateHUD(){
   whoAvatarEl.textContent=store.data.avatar||'🍏';
   whoNameEl.textContent=store.data.name||'Player';
   if(G.state==='menu'){$('#lvlName').textContent='';$('#lvlNum').textContent='–';}
   else{$('#lvlName').textContent=G.L.name;$('#lvlNum').textContent=G.level;}
-  buildPips();buildLives();syncPause();
+  buildRoundBar();buildLives();syncPause();
 }
 let viewToken=0,fabOpen=false;
 function setFab(open){
@@ -308,7 +308,7 @@ function setupRound(){
   G.target={f:placed[0].f,shape,seed:Math.random()*6,flash:0,glow:0};
   const pool=shuffle(SHAPES.filter(s=>s!==shape));
   G.decoys=placed.slice(1).map((p,i)=>({f:p.f,shape:pool[i],seed:Math.random()*6,flash:0}));
-  buildPips();
+  buildRoundBar();
 }
 function startLevel(n,base){
   const L=getLevel(n);
@@ -417,7 +417,7 @@ function stop(){
 }
 function nextStep(){
   const L=G.L;
-  if(G.res.ok){G.round++;buildPips();if(G.round>=L.rounds){completeLevel();return;}}
+  if(G.res.ok){G.round++;buildRoundBar();if(G.round>=L.rounds){completeLevel();return;}}
   else if(G.lives<=0){gameOver();return;}
   setupRound();G.state='play';
 }
