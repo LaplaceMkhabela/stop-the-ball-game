@@ -5,6 +5,8 @@ const adPlayButton = document.getElementById('adPlayButton');
 const adHint = document.getElementById('adHint');
 const menu = document.getElementById('menu');
 
+const skipAd = new URLSearchParams(window.location.search).has('menu') || window.location.hash === '#menu';
+
 let adFinished = false;
 
 function finishAd() {
@@ -29,13 +31,18 @@ adVideo.addEventListener('timeupdate', () => {
     }
 });
 
-playAd().forEach((playback) => {
-    if (playback && typeof playback.catch === 'function') {
-        playback.catch(() => {
-            adPlayButton.classList.remove('hidden');
-        });
-    }
-});
+if (skipAd) {
+    ad.classList.add('hidden');
+    menu.classList.remove('hidden');
+} else {
+    playAd().forEach((playback) => {
+        if (playback && typeof playback.catch === 'function') {
+            playback.catch(() => {
+                adPlayButton.classList.remove('hidden');
+            });
+        }
+    });
+}
 
 adPlayButton.addEventListener('click', (event) => {
     event.stopPropagation();
