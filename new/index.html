@@ -11,34 +11,47 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@500;600;700&family=Orbitron:wght@500;600;700;800;900&family=Audiowide&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="app">
-  <header class="hud">
-    <div class="hud-left">
-      <button class="who" id="who" type="button" title="Change player" aria-label="Change player name or avatar">
-        <span class="who-av" id="whoAvatar">🍏</span>
-        <span class="who-name" id="whoName">Player</span>
-      </button>
-      <div class="stat"><span class="k">Score</span><span class="v" id="score">0</span></div>
-      <div class="stat"><span class="k">Speed</span><span class="v sm" id="speed">×1.0</span></div>
-      <div class="stat only-mobile"><span class="k">Level</span><span class="v" id="lvlNum">1</span></div>
-    </div>
-    <div class="hud-mid">
-      <div class="lvl"><span id="lvlN">Level 1</span><span id="lvlName">Circle</span></div>
-      <div class="pips" id="pips"></div>
-    </div>
-    <div class="hud-right">
-      <div class="lives" id="lives" aria-label="Lives"></div>
-      <div class="hud-actions" id="hudActions">
-        <button class="icon" id="btnPause" aria-label="Pause"><svg viewBox="0 0 24 24"><rect class="ic-pause" x="6.5" y="5" width="4" height="14" rx="1.2"/><rect class="ic-pause" x="13.5" y="5" width="4" height="14" rx="1.2"/><path class="ic-play" d="M8 5l11 6.4a.7.7 0 0 1 0 1.2L8 19z"/></svg></button>
-        <button class="icon" id="btnMenu" aria-label="Level menu"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg></button>
-        <button class="icon" id="btnRestart" aria-label="Restart level"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
-        <button class="icon" id="btnSound" aria-label="Toggle sound"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/><path class="slash" d="M3 3l18 18"/></svg></button>
-        <a class="icon" id="btnHome" href="../?menu" aria-label="Back to main menu"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></a>
+  <header class="hud" data-purpose="hud-header">
+    <div class="hud-chassis">
+      <div class="hud-accent"></div>
+      <div class="hud-metrics">
+        <button class="who" id="who" type="button" title="Change player" aria-label="Change player name or avatar">
+          <span class="who-orbit"></span>
+          <span class="who-av" id="whoAvatar">🍏</span>
+          <span class="who-name" id="whoName">Player</span>
+        </button>
+
+        <div class="hud-center">
+          <span class="hud-lv"><span class="hud-lv-k">LV</span><span id="lvlNum">1</span></span>
+          <span class="hud-lv-name" id="lvlName">Circle</span>
+          <span class="hud-sep"></span>
+          <span class="hud-score"><span class="hud-score-k">SCORE</span><span class="v" id="score">0</span></span>
+          <span class="hud-sep"></span>
+          <span class="lives" id="lives" aria-label="Lives"></span>
+        </div>
+
+        <div class="hud-right">
+          <div class="hud-actions" id="hudActions">
+            <button class="icon" id="btnPause" aria-label="Pause"><svg viewBox="0 0 24 24"><rect class="ic-pause" x="6.5" y="5" width="4" height="14" rx="1.2"/><rect class="ic-pause" x="13.5" y="5" width="4" height="14" rx="1.2"/><path class="ic-play" d="M8 5l11 6.4a.7.7 0 0 1 0 1.2L8 19z"/></svg></button>
+            <button class="icon" id="btnMenu" aria-label="Level menu"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg></button>
+            <button class="icon" id="btnRestart" aria-label="Restart level"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
+            <button class="icon" id="btnSound" aria-label="Toggle sound"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/><path class="slash" d="M3 3l18 18"/></svg></button>
+            <a class="icon" id="btnHome" href="../?menu" aria-label="Back to main menu"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></a>
+          </div>
+        </div>
       </div>
+
+      <div class="hud-gauge-row">
+        <span class="hud-gauge-k">SPEED</span>
+        <span class="hud-gauge"><span class="hud-gauge-fill" id="speedBar"></span></span>
+        <span class="hud-gauge-v" id="speed">×1.0</span>
+      </div>
+      <div class="pips" id="pips"></div>
     </div>
   </header>
 

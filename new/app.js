@@ -184,7 +184,7 @@ const dust=Array.from({length:RM?28:70},()=>({x:Math.random(),y:Math.random(),s:
 /* ---------- DOM ---------- */
 const canvas=$('#cv'),ctx=canvas.getContext('2d'),stage=$('#stage');
 const ov=$('#ov'),card=$('#card'),stopBtn=$('#stopBtn'),comboEl=$('#combo'),live=$('#live');
-const whoAvatarEl=$('#whoAvatar'),whoNameEl=$('#whoName'),pauseBtn=$('#btnPause'),hudActions=$('#hudActions'),fab=$('#fab');
+const whoAvatarEl=$('#whoAvatar'),whoNameEl=$('#whoName'),pauseBtn=$('#btnPause'),hudActions=$('#hudActions'),fab=$('#fab'),speedBar=$('#speedBar');
 const HEART='<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2 0 3.4 1.1 5.3 3 1.9-1.9 3.3-3 5.3-3 3.7 0 5.800 3.900 4.300 7.300C19.500 16.400 12 21 12 21z"/></svg>';
 const say=t=>{live.textContent=t;};
 function buildPips(){$('#pips').innerHTML=Array.from({length:G.L.rounds||0},(_,i)=>`<i class="${i<G.round?'done':''}"></i>`).join('');}
@@ -192,8 +192,8 @@ function buildLives(){$('#lives').innerHTML=Array.from({length:3},(_,i)=>HEART.r
 function updateHUD(){
   whoAvatarEl.textContent=store.data.avatar||'🍏';
   whoNameEl.textContent=store.data.name||'Player';
-  if(G.state==='menu'){$('#lvlN').textContent='Pick a level';$('#lvlName').textContent='';$('#lvlNum').textContent='–';}
-  else{$('#lvlN').textContent='Level '+G.level;$('#lvlName').textContent=G.L.name;$('#lvlNum').textContent=G.level;}
+  if(G.state==='menu'){$('#lvlName').textContent='';$('#lvlNum').textContent='–';}
+  else{$('#lvlName').textContent=G.L.name;$('#lvlNum').textContent=G.level;}
   buildPips();buildLives();syncPause();
 }
 let viewToken=0,fabOpen=false;
@@ -518,7 +518,7 @@ function update(dt){
   if(sc!==lastScore){lastScore=sc;$('#score').textContent=sc.toLocaleString();}
   const L=G.L;
   const sp='×'+((L.speed||8)*G.speedMult/8).toFixed(1);
-  if(sp!==lastSpeed){lastSpeed=sp;$('#speed').textContent=sp;}
+  if(sp!==lastSpeed){lastSpeed=sp;$('#speed').textContent=sp;speedBar.style.width=(Math.min(1,(L.speed||8)*G.speedMult/22)*100).toFixed(0)+'%';}
   const idle=G.state!=='play';
   if(idle!==lastIdle){lastIdle=idle;stopBtn.classList.toggle('idle',idle);}
   if(G.combo!==lastCombo){lastCombo=G.combo;comboEl.textContent=`Streak ${G.combo}`;comboEl.classList.toggle('show',G.combo>=2);}
