@@ -50,6 +50,9 @@ button{font:inherit;color:inherit}
 .icon:hover{background:hsl(var(--h) 50% 22% / .8)}
 .icon.off .slash{display:block}
 .icon .slash{display:none}
+.who{display:flex;align-items:center;gap:8px;align-self:center;max-width:190px;padding:5px 14px 5px 5px;border-radius:999px;border:1px solid var(--line);background:hsl(var(--h) 45% 14% / .6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.who-av{flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:19px;line-height:1;background:hsl(var(--h) 45% 24% / .85);box-shadow:inset 0 0 0 1px hsl(0 0% 100% / .06)}
+.who-name{font-weight:600;font-size:14px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* Stage */
 .stage{
@@ -129,11 +132,14 @@ canvas#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
 
 @media (max-width:640px){
   .hud{grid-template-columns:1fr auto;grid-template-areas:"left right" "mid mid";row-gap:6px}
+  .hud-left{gap:12px}
   .stat .v{font-size:22px}
   .hint{display:none}
   .stop{height:64px;font-size:24px}
   .lv canvas{width:34px;height:34px}
   .card{padding:20px 14px}
+  .who{padding:4px;max-width:none}
+  .who-name{display:none}
 }
 @media (max-height:620px){ .lede{margin:8px auto 12px} .levels{margin-top:12px} .stars{margin:6px 0 0} .star{font-size:34px} }
 @media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }

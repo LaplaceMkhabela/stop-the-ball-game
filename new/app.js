@@ -180,11 +180,14 @@ const dust=Array.from({length:RM?28:70},()=>({x:Math.random(),y:Math.random(),s:
 /* ---------- DOM ---------- */
 const canvas=$('#cv'),ctx=canvas.getContext('2d'),stage=$('#stage');
 const ov=$('#ov'),card=$('#card'),stopBtn=$('#stopBtn'),comboEl=$('#combo'),live=$('#live');
+const whoAvatarEl=$('#whoAvatar'),whoNameEl=$('#whoName');
 const HEART='<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2 0 3.4 1.1 5.3 3 1.9-1.9 3.3-3 5.3-3 3.7 0 5.800 3.900 4.300 7.300C19.500 16.400 12 21 12 21z"/></svg>';
 const say=t=>{live.textContent=t;};
 function buildPips(){$('#pips').innerHTML=Array.from({length:G.L.rounds||0},(_,i)=>`<i class="${i<G.round?'done':''}"></i>`).join('');}
 function buildLives(){$('#lives').innerHTML=Array.from({length:3},(_,i)=>HEART.replace('<svg','<svg class="'+(i<G.lives?'':'lost')+'"')).join('');}
 function updateHUD(){
+  whoAvatarEl.textContent=store.data.avatar||'🍏';
+  whoNameEl.textContent=store.data.name||'Player';
   if(G.state==='menu'){$('#lvlN').textContent='Pick a level';$('#lvlName').textContent='';}
   else{$('#lvlN').textContent='Level '+G.level;$('#lvlName').textContent=G.L.name;}
   buildPips();buildLives();
@@ -254,6 +257,7 @@ function showOnboarding(){
     <div class="avatars">${grid}</div>
     <div class="actions"><button class="btn primary" data-act="save-player" disabled>Start playing</button></div>`);
   updateOnboard();
+  updateHUD();
 }
 function updateOnboard(){
   const input=card.querySelector('#playerName'),btn=card.querySelector('[data-act="save-player"]');
