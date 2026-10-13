@@ -5,18 +5,26 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Stop the Ball Game</h1>
-    <p>Press the button to stop the moving ball in the green zone</p>
-    <div id="scoreDisplay">Score: 0</div>
-    <div id="speedDisplay">Speed: 5</div>
-    <div id="message"></div>
-    <div id="controls">
-        <button id="stopButton">STOP!</button>
-        <button id="resetButton">Reset Game</button>
+    <div id="ad">
+        <video id="adBg" src="ad.mp4" playsinline muted preload="auto" aria-hidden="true"></video>
+        <div id="adGlass"></div>
+        <video id="adVideo" src="ad.mp4" playsinline muted preload="auto"></video>
+        <button id="adPlayButton" class="hidden">Play</button>
+        <div id="adHint" class="hidden">Tap anywhere to continue</div>
     </div>
-    <div id="gameContainer">
-        <div id="movingObject"></div>
-        <div id="targetZone"></div>
+    <div id="menu" class="hidden">
+        <h1>Stop the Ball Game</h1>
+        <p>Choose a version to play</p>
+        <div id="modeList">
+            <button class="mode-button" data-href="classic/">
+                <span class="mode-name">Classic</span>
+                <span class="mode-desc">The original reflex game</span>
+            </button>
+            <button class="mode-button" data-href="new/">
+                <span class="mode-name">New Version</span>
+                <span class="mode-desc">10 levels, shapes &amp; decoys</span>
+            </button>
+        </div>
     </div>
     <script src="app.js"></script>
 </body>
