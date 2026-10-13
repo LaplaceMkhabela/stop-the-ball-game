@@ -28,7 +28,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 
 /* HUD */
 .hud{
-  display:block;
+  display:block;position:relative;z-index:50;
   --hud-ink:hsl(var(--h) 100% 88%);
   --hud-line:hsl(var(--h) 80% 70% / .35);
   --hud-accent:hsl(var(--h) 100% 68%);
@@ -39,12 +39,15 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 }
 .hud-chassis{
   position:relative;isolation:isolate;padding:12px;
+}
+.hud-chassis::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
   background:var(--hud-panel);
   border:1px solid var(--hud-line);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
   box-shadow:0 0 20px var(--hud-glow),inset 0 0 12px hsl(var(--h) 100% 60% / .12);
   clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px);
 }
-.hud-chassis::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 .hud-accent{position:absolute;top:0;left:32px;right:32px;height:2px;background:linear-gradient(90deg,transparent,var(--hud-accent),var(--hud-accent2),transparent)}
 .hud-metrics{display:flex;align-items:center;justify-content:space-between;gap:10px}
 
