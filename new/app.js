@@ -192,8 +192,8 @@ function buildLives(){$('#lives').innerHTML=Array.from({length:3},(_,i)=>HEART.r
 function updateHUD(){
   whoAvatarEl.textContent=store.data.avatar||'🍏';
   whoNameEl.textContent=store.data.name||'Player';
-  if(G.state==='menu'){$('#lvlN').textContent='Pick a level';$('#lvlName').textContent='';}
-  else{$('#lvlN').textContent='Level '+G.level;$('#lvlName').textContent=G.L.name;}
+  if(G.state==='menu'){$('#lvlN').textContent='Pick a level';$('#lvlName').textContent='';$('#lvlNum').textContent='–';}
+  else{$('#lvlN').textContent='Level '+G.level;$('#lvlName').textContent=G.L.name;$('#lvlNum').textContent=G.level;}
   buildPips();buildLives();syncPause();
 }
 let viewToken=0,fabOpen=false;

@@ -42,6 +42,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .pips{display:flex;gap:6px;justify-content:center;margin-top:8px;min-height:10px}
 .pips i{width:10px;height:10px;border-radius:50%;background:hsl(var(--h) 40% 80% / .18);transition:background .3s,transform .3s}
 .pips i.done{background:var(--accent);box-shadow:0 0 12px var(--accent);transform:scale(1.15)}
+.only-mobile{display:none}
 .lives{display:flex;gap:4px;margin-right:6px}
 .lives svg{width:22px;height:22px;fill:hsl(350 95% 62%);filter:drop-shadow(0 0 6px hsl(350 100% 60% / .6));transition:opacity .3s,transform .3s}
 .lives svg.lost{opacity:.18;transform:scale(.8);filter:none}
@@ -141,6 +142,9 @@ canvas#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
   .hud{grid-template-columns:1fr auto;grid-template-areas:"left right" "mid mid";row-gap:6px}
   .hud-left{gap:12px}
   .stat .v{font-size:22px}
+  .only-mobile{display:flex}
+  .hud-mid .lvl{display:none}
+  .pips{margin-top:0}
   .hint{display:none}
   .icon{width:44px;height:44px}
   .stop{height:64px;font-size:24px}
