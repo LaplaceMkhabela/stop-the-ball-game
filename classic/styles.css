@@ -77,11 +77,29 @@
             touch-action: manipulation;
             margin: 0 10px;
         }
+        #stopBar {
+            margin: 20px auto 0;
+            display: flex;
+            justify-content: center;
+        }
         #stopButton {
             background-color: #e74c3c;
+            width: min(600px, 92vw);
+            height: 72px;
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 0.06em;
+            border-radius: 14px;
+            margin: 0;
+            box-shadow: 0 6px 0 #b03a2e;
+            transition: transform 0.06s, box-shadow 0.06s;
         }
         #stopButton:hover {
             background-color: #c0392b;
+        }
+        #stopButton:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #b03a2e;
         }
         #resetButton {
             background-color: #3498db;
@@ -102,4 +120,10 @@
         @keyframes pulse {
             from { transform: scale(1); }
             to { transform: scale(1.05); }
+        }
+        @media (max-height: 620px) {
+            #stopButton {
+                height: 56px;
+                font-size: 20px;
+            }
         }
