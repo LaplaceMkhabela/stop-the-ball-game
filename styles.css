@@ -133,6 +133,7 @@ body {
     padding: 30px 20px;
     border: 1px solid var(--line);
     position: relative;
+    z-index: 1;
     margin: 15px;
 }
 #menu.hidden {
@@ -140,57 +141,28 @@ body {
     pointer-events: none;
 }
 
-/* Decorative floating characters */
-.floating-char {
+/* Animated blurred background shapes */
+.bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+.bg .shape {
     position: absolute;
-    width: 45px;
-    height: 45px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
-    animation: float 3s ease-in-out infinite;
+    top: 0;
+    left: 0;
+    filter: blur(56px);
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
 }
-.floating-char:nth-child(1) { top: 30px; left: 40px; animation-delay: 0s; }
-.floating-char:nth-child(2) { top: 40px; right: 40px; animation-delay: 1.5s; }
-
-@keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(5deg); }
+@media (prefers-reduced-motion: reduce) {
+    .bg .shape {
+        filter: blur(64px);
+    }
 }
-
-.face {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: inset -4px -4px 10px rgba(0, 0, 0, 0.2), inset 3px 3px 8px rgba(255, 255, 255, 0.4);
-}
-.eye {
-    position: absolute;
-    top: 15px;
-    width: 5px;
-    height: 8px;
-    background: hsl(var(--h) 60% 12%);
-    border-radius: 50%;
-}
-.eye.left { left: 14px; }
-.eye.right { right: 14px; }
-.mouth {
-    position: absolute;
-    bottom: 11px;
-    width: 10px;
-    height: 5px;
-    border-bottom: 2.5px solid hsl(var(--h) 60% 12%);
-    border-radius: 0 0 8px 8px;
-}
-
-.char-circle { border-radius: 50%; }
-.char-circle .face { border-radius: 50%; background: linear-gradient(135deg, hsl(var(--h) 100% 78%), hsl(calc(var(--h) + 30) 92% 50%)); }
-.char-star { clip-path: polygon(50% 2%, 63% 35%, 98% 38%, 70% 60%, 79% 95%, 50% 75%, 21% 95%, 30% 60%, 2% 38%, 37% 35%); }
-.char-star .face { background: radial-gradient(circle at 40% 40%, hsl(var(--h) 100% 78%), hsl(calc(var(--h) + 60) 92% 55%)); clip-path: polygon(50% 2%, 63% 35%, 98% 38%, 70% 60%, 79% 95%, 50% 75%, 21% 95%, 30% 60%, 2% 38%, 37% 35%); }
 
 /* Typography */
 #menu h1 {
@@ -268,10 +240,7 @@ body {
         padding: 25px 15px;
         min-height: auto;
     }
-    .floating-char {
-        width: 35px;
-        height: 35px;
+    .bg .shape {
+        filter: blur(55px);
     }
-    .floating-char:nth-child(1) { top: 15px; left: 15px; }
-    .floating-char:nth-child(2) { top: 15px; right: 15px; }
 }
